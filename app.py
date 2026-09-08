@@ -247,46 +247,52 @@ try:
     def fmt(val):
         return f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    # Coeficientes en métricas nativas de Streamlit
-    st.markdown("### 📊 Coeficientes de la Partida")
+    # Coeficientes tal cual los definiste
     c_r1, c_r2, c_r3, c_r4, c_r5 = st.columns(5)
-    c_r1.metric("Base Imponible (BI)", fmt(bi))
-    c_r2.metric("Coef. Año (CA)", str(ca))
-    c_r3.metric("Coef. Uso (CU)", str(cu))
-    c_r4.metric("Coef. Baldio (CB)", str(cb))
-    c_r5.metric("Coef. Acceso (CAP)", str(cap))
+    c_r1.metric("BI", fmt(bi))
+    c_r2.metric("CA", str(ca))
+    c_r3.metric("CU", str(cu))
+    c_r4.metric("CB", str(cb))
+    c_r5.metric("CAP", str(cap))
 
     st.markdown("---")
-    st.markdown("### 📄 Resumen de Liquidación Mensual")
 
-    # Función interna para estructurar las tarjetas con tus clases CSS (.resultado-box)
-    def fila_resultado(etiqueta, valor_str, destacar=False):
-        estilo_extra = 'style="border-left: 4px solid #1e3a8a !important; background-color: #f1f5f9 !important;"' if destacar else ''
+    # Función fila_resultado completada para renderizar tus recuadros de texto
+    def fila_resultado(etiqueta, valor):
         st.markdown(
             f"""
-            <div class="resultado-box" {estilo_extra}>
+            <div class="resultado-box">
                 <span class="resultado-label">{etiqueta}</span>
-                <span class="resultado-valor">\{valor_str}</span>
+                <span class="resultado-valor">\{valor}</span>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-    # Renderizado ordenado de todos los importes calculados
-    fila_resultado("Tasa Mensual Base:", fmt(tasa_mensual))
-    fila_resultado("Tasa Protección Ciudadana (9.5%):", fmt(tasa_proteccion))
-    fila_resultado("Tasa Salud Pública (10.5%):", fmt(tasa_salud))
+    # Llamadas a la función usando tus variables calculadas y tu formato original
+    fila_resultado("Tasa Mensual:", fmt(tasa_mensual))
+    fila_resultado("Tasa Protección Ciudadana:", fmt(tasa_proteccion))
+    fila_resultado("Tasa Salud Pública:", fmt(tasa_salud))
     
     if monto_bc > 0:
-        fila_resultado("Descuento Buen Contribuyente (10%):", f"- {fmt(monto_bc)}")
+        fila_resultado("Descuento BC:", f"- {fmt(monto_bc)}")
     if monto_da > 0:
-        fila_resultado("Descuento Débito Automático (10%):", f"- {fmt(monto_da)}")
+        fila_resultado("Descuento DA:", f"- {fmt(monto_da)}")
     if monto_be > 0:
-        fila_resultado("Descuento Buen Empleador (5%):", f"- {fmt(monto_be)}")
+        fila_resultado("Descuento BE:", f"- {fmt(monto_be)}")
     if edenor_val > 0:
-        fila_resultado("Deducción Convenio EDENOR:", f"- {fmt(edenor_val)}")
+        fila_resultado("EDENOR:", f"- {fmt(edenor_val)}")
         
-    fila_resultado("TOTAL NETO A LIQUIDAR (MENSUAL):", fmt(tasa_total), destacar=True)
+    # Recuadro final destacado para el total
+    st.markdown(
+        f"""
+        <div class="resultado-box" style="border-left: 4px solid #1e3a8a !important; background-color: #f1f5f9 !important;">
+            <span class="resultado-label" style="font-size: 14px; color: #1e3a8a;">TASA TOTAL A LIQUIDAR:</span>
+            <span class="resultado-valor" style="font-size: 14px; color: #1e3a8a;">\{fmt(tasa_total)}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 except Exception as e:
-    st.error(f"Error en la carga de datos numéricos: {e}")
+    st.error(f"Error: {e}")
