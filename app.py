@@ -82,8 +82,8 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Partida municipal en el medio
-col_p1, col_p2, col_p3 = st.columns()
+# Partida municipal en el medio (CORREGIDO: Ahora st.columns recibe explícitamente el número 3)
+col_p1, col_p2, col_p3 = st.columns(3)
 with col_p2:
     entry_partida = st.text_input("PARTIDA MUNICIPAL N°:")
 
