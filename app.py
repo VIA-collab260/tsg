@@ -5,54 +5,59 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilos CSS unificados para forzar tipografía Arial limpia, colores institucionales y consistencia visual total
+# Estilos CSS optimizados para visualización compacta y reglas de impresión en una hoja A4
 st.markdown(
     """
     <style>
-        /* Forzar fuente Arial corporativa y fondo claro en toda la app moderna */
+        /* Forzar fuente Arial corporativa y fondo claro en toda la app */
         .stApp, html, body, [data-testid="stAppViewContainer"] {
             font-family: Arial, sans-serif !important;
             background-color: #f8fafc !important;
             color: #0f172a !important;
         }
         
-        /* Unificar color y tipografía de todas las etiquetas, textos y párrafos nativos */
+        /* Unificar color y tipografía de todas las etiquetas nativas */
         label, p, span, div, [data-testid="stWidgetLabel"] p, .stMarkdown p {
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
         }
         
-        /* Títulos limpios */
-        h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] h1 {
-            font-family: Arial, sans-serif !important;
-            color: #1e3a8a !important;
+        /* Reducir márgenes de los controles de selección de Streamlit para que entren en horizontal */
+        [data-testid="stWidgetLabel"] {
+            margin-bottom: 2px !important;
+            padding-bottom: 0px !important;
         }
         
-        /* Tarjetas de resultados perfectamente uniformes basados en tu diseño */
+        div.row-widget.stRadio > div {
+            flex-direction: row !important;
+            gap: 10px !important;
+        }
+        
+        /* Tarjetas de resultados compactas para maximizar espacio */
         .resultado-box {
             background-color: #ffffff !important;
-            padding: 10px 14px;
-            border-radius: 6px;
+            padding: 6px 10px;
+            border-radius: 4px;
             border: 1px solid #cbd5e1 !important;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
         
         .resultado-label {
             font-family: Arial, sans-serif !important;
             color: #1e3a8a !important;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
         }
         
         .resultado-valor {
             font-family: Arial, sans-serif !important;
             color: #0f172a !important;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
         }
         
         /* Estilo personalizado para el botón de impresión */
@@ -62,9 +67,41 @@ st.markdown(
             font-weight: bold !important;
             border-radius: 4px !important;
             border: none !important;
-            padding: 10px 20px !important;
+            padding: 8px 16px !important;
             width: 100% !important;
         }
+
+        /* REGLAS ESTRICTAS DE IMPRESIÓN PARA HOJA A4 */
+        @media print {
+            body, .stApp, [data-testid="stAppViewContainer"] {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-size: 10pt !important;
+            }
+            /* Ocultar barra lateral, botones superiores y de desarrollo de Streamlit */
+            header, [data-testid="stSidebar"], [data-testid="stHeader"], .stDeployButton, [data-testid="stDecoration"] {
+                display: none !important;
+            }
+            /* Ocultar el propio botón de impresión al mandar a imprimir */
+            .stButton {
+                display: none !important;
+            }
+            /* Quitar el scroll dinámico de la página web */
+            [data-testid="stAppViewContainer"] {
+                overflow: visible !important;
+                position: static !important;
+            }
+            /* Ajustar contenedores al ancho de la hoja A4 sin márgenes web */
+            .block-container {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                max-width: 100% !important;
+            }
+            .resultado-box {
+                border: 1px solid #000000 !important;
+                page-break-inside: avoid !important;
+            }
+        </div>
     </style>
     """,
     unsafe_allow_html=True,
@@ -73,8 +110,8 @@ st.markdown(
 # Encabezado institucional
 st.markdown(
     """
-    <div style="background-color: #0284c7; padding: 14px; border-radius: 6px; color: white; display: flex; align-items: center;">
-        <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales - Municipio de Moreno</span>
+    <div style="background-color: #0284c7; padding: 12px; border-radius: 6px; color: white; display: flex; align-items: center;">
+        <span style="font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales - Municipio de Moreno</span>
     </div>
     """,
     unsafe_allow_html=True,
@@ -82,50 +119,55 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Partida municipal en el medio (CORREGIDO: Ahora st.columns recibe explícitamente el número 3)
+# Partida municipal centrada
 col_p1, col_p2, col_p3 = st.columns(3)
 with col_p2:
     entry_partida = st.text_input("PARTIDA MUNICIPAL N°:")
 
 st.markdown("---")
 
-# Controles de entrada organizados uno al lado del otro (en 3 columnas)
-col1, col2, col3 = st.columns(3)
-
-with col1:
+# Controles organizados estrictamente uno al lado del otro de izquierda a derecha (Fila 1)
+col_form1, col_form2, col_form3 = st.columns(3)
+with col_form1:
     var_estado = st.radio("Estado:", ["EDIFICADO", "BALDIO"])
+with col_form2:
     var_uso = st.radio("Uso:", ["RESIDENCIAL", "COMERCIAL", "INDUSTRIAL"])
+with col_form3:
     var_acceso = st.radio("Acceso Principal:", ["NO", "SI"])
 
-with col2:
+# Fila 2 de controles horizontales
+col_form4, col_form5, col_form6 = st.columns(3)
+with col_form4:
     var_zonif = st.selectbox("Zonificación:", ["A/B", "F", "OTRA"])
+with col_form5:
     var_tope = st.radio("Liberar Tope:", ["NO", "SI"])
-
-with col3:
-    st.markdown("**Descuentos:**")
-    var_bc = st.radio("BC 10%:", ["NO", "SI"], horizontal=True)
-    var_da = st.radio("DA 10%:", ["NO", "SI"], horizontal=True)
-    var_be = st.radio("BE 5%:", ["NO", "SI"], horizontal=True)
+with col_form6:
     entry_edenor = st.text_input("EDENOR ($):", "0,00")
+
+# Fila 3 de descuentos horizontales
+st.markdown("**Descuentos:**")
+col_desc1, col_desc2, col_desc3 = st.columns(3)
+with col_desc1:
+    var_bc = st.radio("BC 10%:", ["NO", "SI"], horizontal=True)
+with col_desc2:
+    var_da = st.radio("DA 10%:", ["NO", "SI"], horizontal=True)
+with col_desc3:
+    var_be = st.radio("BE 5%:", ["NO", "SI"], horizontal=True)
 
 st.markdown("---")
 
-# Superficies
-col_sup1, col_sup2 = st.columns(2)
+# Superficies y Valuaciones en formato compacto horizontal
+col_sup1, col_sup2, col_val1, col_val2 = st.columns(4)
 with col_sup1:
     entry_sup_terreno = st.text_input("Superficie de Terreno (m²):", "300,00")
 with col_sup2:
     entry_sup_edificada = st.text_input("Superficie Edificada (m²):", "0,00")
-
-# Valuaciones
-col_val1, col_val2 = st.columns(2)
 with col_val1:
     entry_va = st.text_input("Valuación ($):", "300000,00")
 with col_val2:
-    var_anio = st.selectbox(
-        "Valuación año:", ["2023 o anterior", "2024", "2025", "2026"]
-    )
-# Lógica de cálculo y renderizado de resultados
+    var_anio = st.selectbox("Valuación año:", ["2023 o anterior", "2024", "2025", "2026"])
+
+# Lógica de cálculo y renderizado en formato horizontal compacto para hoja A4
 try:
     va = float(entry_va.replace(".", "").replace(",", ".")) if entry_va else 0.0
     sup_terreno = float(entry_sup_terreno.replace(".", "").replace(",", ".")) if entry_sup_terreno else 0.0
@@ -215,12 +257,9 @@ try:
     tasa_salud_str = fmt(tasa_salud)
     tasa_total_str = fmt(tasa_total)
 
-    # =========================================================================
-    # SECCIÓN DE RESULTADOS CON LAS ETIQUETAS REALES DE TU IMAGEN
-    # =========================================================================
     st.markdown("---")
     
-    # 1. Fila de Base Imponible y Coeficientes en horizontal
+    # 1. COEFICIENTES (Fila horizontal existente)
     c_bi, c_ca, c_cu, c_cb, c_cap = st.columns(5)
     with c_bi:
         st.markdown(f'<div class="resultado-box"><span class="resultado-label">Base imponible y Coeficientes BI:</span><span class="resultado-valor">{bi_str}</span></div>', unsafe_allow_html=True)
@@ -233,49 +272,57 @@ try:
     with c_cap:
         st.markdown(f'<div class="resultado-box"><span class="resultado-label">CAP:</span><span class="resultado-valor">{cap}</span></div>', unsafe_allow_html=True)
 
-    # Función adaptada para estructurar las filas según tu formato exacto
-    def fila_item_tasas(descripcion, valor_texto, es_total=False):
-        if es_total:
-            st.markdown(
-                f"""
-                <div class="resultado-box" style="border: 2px solid #0f172a !important; margin-top: 15px; padding: 12px 14px;">
-                    <span class="resultado-label" style="font-size: 15px; color: #1e3a8a; font-weight: bold;">{descripcion}</span>
-                    <span class="resultado-valor" style="font-size: 16px; color: #0284c7; font-weight: bold;">{valor_texto}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
+    # Función auxiliar para renderizar cajas limpias dentro de las columnas horizontales
+    def caja_horizontal(descripcion, valor_texto, columna_destino):
+        with columna_destino:
             st.markdown(
                 f"""
                 <div class="resultado-box">
-                    <span class="resultado-label" style="color: #1e3a8a;">{descripcion}</span>
+                    <span class="resultado-label">{descripcion}</span>
                     <span class="resultado-valor">{valor_texto}</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-    # 2. Bloque vertical de liquidación con tus nombres exactos de la imagen
-    fila_item_tasas("Límite inferior:", lim_str)
-    fila_item_tasas("Alícuota:", alic_str)
-    fila_item_tasas("CFA:", cfa_str)
-    fila_item_tasas("TSG Anual:", tasa_anual_str)
-    fila_item_tasas("TSG Mensual:", tasa_mensual_str)
-    fila_item_tasas("BC (Descuento):", bc_str)
-    fila_item_tasas("DA (Descuento):", da_str)
-    fila_item_tasas("BE (Descuento):", be_str)
-    fila_item_tasas("EDENOR:", edenor_str)
-    fila_item_tasas("Tasa de Protección:", tasa_prot_str)
-    fila_item_tasas("Tasa de Salud:", tasa_salud_str)
+    # NUEVO: Distribución horizontal de importes en 3 columnas anchas (Izquierda a Derecha)
+    c_res1, c_res2, c_res3 = st.columns(3)
     
-    # 3. Fila destacada para el total a pagar
-    fila_item_tasas("TSG Total:", tasa_total_str, es_total=True)
+    # Fila 1 Horizontal: Límite inferior, Alícuota y CFA alineados uno al lado del otro
+    caja_horizontal("Límite inferior:", lim_str, c_res1)
+    caja_horizontal("Alícuota:", alic_str, c_res2)
+    caja_horizontal("CFA:", cfa_str, c_res3)
+    
+    # Fila 2 Horizontal: Tasas calculadas bases
+    caja_horizontal("TSG Anual:", tasa_anual_str, c_res1)
+    caja_horizontal("TSG Mensual:", tasa_mensual_str, c_res2)
+    caja_horizontal("Tasa de Protección:", tasa_prot_str, c_res3)
+    
+    # Fila 3 Horizontal: Impuestos adicionales y deducciones básicas
+    caja_horizontal("Tasa de Salud:", tasa_salud_str, c_res1)
+    caja_horizontal("EDENOR:", edenor_str, c_res2)
+    caja_horizontal("BC (Descuento):", bc_str, c_res3)
+    
+    # Fila 4 Horizontal: Descuentos restantes distribuidos uniformemente
+    caja_horizontal("DA (Descuento):", da_str, c_res1)
+    caja_horizontal("BE (Descuento):", be_str, c_res2)
 
-    # 4. Botón institucional para imprimir reporte
+    # 3. Cuadro destacado final para el TSG Total posicionado abajo abarcando el ancho completo
+    st.markdown(
+        f"""
+        <div class="resultado-box" style="border: 2px solid #0f172a !important; margin-top: 10px; padding: 10px 14px;">
+            <span class="resultado-label" style="font-size: 14px; color: #1e3a8a; font-weight: bold;">TSG Total:</span>
+            <span class="resultado-valor" style="font-size: 15px; color: #0284c7; font-weight: bold;">{tasa_total_str}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # 4. Botón institucional para imprimir reporte (Abre el diálogo nativo de impresión del sistema)
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("🖨️ IMPRIMIR REPORTE"):
-        st.info("Generando reporte de la partida municipal...")
+    if st.button("🖨️ IMPRIMIR REPORTE EN HOJA A4"):
+        st.markdown("""<script>window.print();</script>""", unsafe_allow_html=True)
+        st.success("Abriendo ventana de impresión... Seleccione guardar como PDF o su impresora física.")
 
 except ValueError:
     st.error("Revise que los campos numéricos sean válidos.")
