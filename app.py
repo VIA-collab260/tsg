@@ -2,28 +2,28 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Liquidador Tasas por Servicios Generales - Municipio de Moreno",
-    layout="wide",
+    layout="centered",
 )
 
 # Estilos CSS unificados para forzar tipografía Arial limpia, colores institucionales y consistencia visual total
 st.markdown(
     """
     <style>
-        /* Forzar fuente Arial corporativa y fondo claro en toda la app moderna */
-        .stApp, html, body, [data-testid="stAppViewContainer"] {
+        /* Forzar fuente Arial corporativa y fondo claro en toda la app */
+        .stApp, html, body, [class*="css"] {
             font-family: Arial, sans-serif !important;
             background-color: #f8fafc !important;
             color: #0f172a !important;
         }
         
-        /* Unificar color y tipografía de todas las etiquetas, textos y párrafos nativos */
-        label, p, span, div, [data-testid="stWidgetLabel"] p, .stMarkdown p {
+        /* Unificar color y tipografía de todas las etiquetas, textos y párrafos */
+        label, p, span, div, .stRadio label, .stSelectbox label, .stTextInput label {
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
         }
         
         /* Títulos limpios */
-        h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] h1 {
+        h1, h2, h3, h4, h5, h6 {
             font-family: Arial, sans-serif !important;
             color: #1e3a8a !important;
         }
@@ -55,7 +55,7 @@ st.markdown(
             font-size: 13px;
         }
     </style>
-    """,
+""",
     unsafe_allow_html=True,
 )
 
@@ -66,7 +66,7 @@ st.markdown(
         <span style="font-size: 20px; margin-right: 10px;">🏛️</span>
         <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales</span>
     </div>
-    """,
+""",
     unsafe_allow_html=True,
 )
 
@@ -79,39 +79,17 @@ with col_p2:
 
 st.markdown("---")
 
-# 2. ESTE CSS FUERZA A LAS COLUMNAS A NO SUBDIVIDIRSE EN FILAS EN LA WEB
-st.markdown(
-    """
-    <style>
-        /* Obliga a los contenedores de columnas a mantenerse en fila horizontal */
-        [data-testid="stHorizontalBlock"] {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            gap: 1rem !important;
-        }
-        /* Ajusta el ancho de cada columna para que no se estiren de más */
-        [data-testid="stHorizontalBlock"] > div {
-            min-width: 0 !important;
-            flex: 1 1 0% !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Controles de entrada organizados uno al lado del otro (en 3 columnas)
+# Controles de entrada organizados en 3 columnas
 col1, col2, col3 = st.columns(3)
 
 with col1:
     estado_sel = st.radio("Estado:", ["EDIFICADO", "BALDIO"])
     uso_sel = st.radio("Uso:", ["RESIDENCIAL", "COMERCIAL", "INDUSTRIAL"])
-    var_acceso = st.radio("Acceso Principal:", ["NO", "SI"])
 
 with col2:
-    var_zonif = st.selectbox("Zonificación:", ["A/B", "F", "OTRA"])
+    var_acceso = st.radio("Acceso Principal:", ["NO", "SI"])
     var_tope = st.radio("Liberar Tope:", ["NO", "SI"])
-    
+    var_zonif = st.selectbox("Zonificación:", ["A/B", "F", "OTRA"])
 
 with col3:
     st.markdown("**Descuentos:**")
@@ -247,7 +225,9 @@ try:
     def fmt(val):
         return f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    # Coeficientes tal cual los definiste
+    st.markdown("### Resultados del Cálculo")
+
+    # Coeficientes
     c_r1, c_r2, c_r3, c_r4, c_r5 = st.columns(5)
     c_r1.metric("BI", fmt(bi))
     c_r2.metric("CA", str(ca))
@@ -255,44 +235,42 @@ try:
     c_r4.metric("CB", str(cb))
     c_r5.metric("CAP", str(cap))
 
-    st.markdown("---")
-
-    # Función fila_resultado completada para renderizar tus recuadros de texto
     def fila_resultado(etiqueta, valor):
         st.markdown(
             f"""
             <div class="resultado-box">
                 <span class="resultado-label">{etiqueta}</span>
-                <span class="resultado-valor">\{valor}</span>
+                <span class="resultado-valor">{valor}</span>
             </div>
-            """,
-            unsafe_allow_html=True
+        """,
+            unsafe_allow_html=True,
         )
 
-    # Llamadas a la función usando tus variables calculadas y tu formato original
-    fila_resultado("Tasa Mensual:", fmt(tasa_mensual))
-    fila_resultado("Tasa Protección Ciudadana:", fmt(tasa_proteccion))
-    fila_resultado("Tasa Salud Pública:", fmt(tasa_salud))
-    
-    if monto_bc > 0:
-        fila_resultado("Descuento BC:", f"- {fmt(monto_bc)}")
-    if monto_da > 0:
-        fila_resultado("Descuento DA:", f"- {fmt(monto_da)}")
-    if monto_be > 0:
-        fila_resultado("Descuento BE:", f"- {fmt(monto_be)}")
-    if edenor_val > 0:
-        fila_resultado("EDENOR:", f"- {fmt(edenor_val)}")
-        
-    # Recuadro final destacado para el total
+    r1, r2 = st.columns(2)
+    with r1:
+        fila_resultado("Límite inferior:", fmt(lim_inf))
+        fila_resultado("CFA:", fmt(cfa_val))
+        fila_resultado("TSG Mensual:", fmt(tasa_mensual))
+        fila_resultado("DA (Descuento):", f"-{fmt(monto_da)}")
+        fila_resultado("Tasa de Protección:", fmt(tasa_proteccion))
+    with r2:
+        fila_resultado("Alícuota:", f"{alic * 100:.2f}%")
+        fila_resultado("TSG Anual:", fmt(tasa_anual))
+        fila_resultado("BC (Descuento):", f"-{fmt(monto_bc)}")
+        fila_resultado("BE (Descuento):", f"-{fmt(monto_be)}")
+        fila_resultado("Tasa de Salud:", fmt(tasa_salud))
+
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
         f"""
-        <div class="resultado-box" style="border-left: 4px solid #1e3a8a !important; background-color: #f1f5f9 !important;">
-            <span class="resultado-label" style="font-size: 14px; color: #1e3a8a;">TASA TOTAL A LIQUIDAR:</span>
-            <span class="resultado-valor" style="font-size: 14px; color: #1e3a8a;">\{fmt(tasa_total)}</span>
+        <div style="background-color: #e0f2fe; padding: 12px; border-radius: 6px; border: 1px solid #1e3a8a; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: Arial, sans-serif; color: #1e3a8a; font-weight: bold; font-size: 14px;">TSG por Servicios Generales Total:</span>
+            <span style="font-family: Arial, sans-serif; color: #1e3a8a; font-weight: bold; font-size: 16px;">{fmt(tasa_total)}</span>
         </div>
-        """,
-        unsafe_allow_html=True
+    """,
+        unsafe_allow_html=True,
     )
 
-except Exception as e:
-    st.error(f"Error: {e}")
+except ValueError:
+    st.error("Por favor, revise que los campos numéricos sean válidos.")
+    
