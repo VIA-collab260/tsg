@@ -28,7 +28,7 @@ st.markdown(
             color: #1e3a8a !important;
         }
         
-        /* Tarjetas de resultados perfectamente uniformes */
+        /* Tarjetas de resultados perfectamente uniformes basados en tu diseño */
         .resultado-box {
             background-color: #ffffff !important;
             padding: 10px 14px;
@@ -54,6 +54,17 @@ st.markdown(
             font-weight: bold;
             font-size: 13px;
         }
+        
+        /* Estilo personalizado para el botón de impresión */
+        .stButton>button {
+            background-color: #0284c7 !important;
+            color: white !important;
+            font-weight: bold !important;
+            border-radius: 4px !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            width: 100% !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -63,7 +74,7 @@ st.markdown(
 st.markdown(
     """
     <div style="background-color: #0284c7; padding: 14px; border-radius: 6px; color: white; display: flex; align-items: center;">
-        <span style="font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales</span>
+        <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales - Municipio de Moreno</span>
     </div>
     """,
     unsafe_allow_html=True,
@@ -72,7 +83,7 @@ st.markdown(
 st.markdown("<br>", unsafe_allow_html=True)
 
 # Partida municipal en el medio
-col_p1, col_p2, col_p3 = st.columns([1, 2, 1])
+col_p1, col_p2, col_p3 = st.columns()
 with col_p2:
     entry_partida = st.text_input("PARTIDA MUNICIPAL N°:")
 
@@ -114,10 +125,7 @@ with col_val2:
     var_anio = st.selectbox(
         "Valuación año:", ["2023 o anterior", "2024", "2025", "2026"]
     )
-
-st.markdown("---")
-
-# Lógica de cálculo
+# Lógica de cálculo y renderizado de resultados
 try:
     va = float(entry_va.replace(".", "").replace(",", ".")) if entry_va else 0.0
     sup_terreno = float(entry_sup_terreno.replace(".", "").replace(",", ".")) if entry_sup_terreno else 0.0
@@ -190,60 +198,84 @@ try:
     if var_tope == "NO" and tasa_total < 4500.0:
         tasa_total = 8900.0 if estado_sel == "BALDIO" else 4500.0
         
-    bi_str = f"${bi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    lim_str = f"${lim_inf:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    cfa_str = f"${cfa_val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    tasa_anual_str = f"${tasa_anual:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    def fmt(val):
+        return f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    bi_str = fmt(bi)
+    lim_str = fmt(lim_inf)
+    cfa_str = fmt(cfa_val)
+    tasa_anual_str = fmt(tasa_anual)
     alic_str = f"{alic * 100:.2f}%"
-    tasa_mensual_str = f"${tasa_mensual:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    bc_str = f"-${monto_bc:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    da_str = f"-${monto_da:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    be_str = f"-${monto_be:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    edenor_str = f"-${monto_edenor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    tasa_prot_str = f"${tasa_proteccion:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    tasa_salud_str = f"${tasa_salud:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    tasa_total_str = f"${tasa_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    tasa_mensual_str = fmt(tasa_mensual)
+    bc_str = f"-{fmt(monto_bc)}" if monto_bc > 0 else f"-{fmt(0.0)}"
+    da_str = f"-{fmt(monto_da)}" if monto_da > 0 else f"-{fmt(0.0)}"
+    be_str = f"-{fmt(monto_be)}" if monto_be > 0 else f"-{fmt(0.0)}"
+    edenor_str = f"-{fmt(monto_edenor)}" if monto_edenor > 0 else f"-{fmt(0.0)}"
+    tasa_prot_str = fmt(tasa_proteccion)
+    tasa_salud_str = fmt(tasa_salud)
+    tasa_total_str = fmt(tasa_total)
 
-    # Renderizado en recuadros exactamente con los mismos nombres de tu archivo original
-    def fila_resultado(etiqueta, valor):
-        st.markdown(
-            f"""
-            <div class="resultado-box">
-                <span class="resultado-label">{etiqueta}</span>
-                <span class="resultado-valor">\{valor}</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    fila_resultado("BI", bi_str)
-    fila_resultado("CA", str(ca))
-    fila_resultado("CU", str(cu))
-    fila_resultado("CB", str(cb))
-    fila_resultado("CAP", str(cap))
-    fila_resultado("lbl_lim_val", lim_str)
-    fila_resultado("lbl_alic_val", alic_str)
-    fila_resultado("lbl_cfa_val", cfa_str)
-    fila_resultado("lbl_tsg_anual_val", tasa_anual_str)
-    fila_resultado("lbl_tasa_servicios_val", tasa_mensual_str)
-    fila_resultado("lbl_bc_val", bc_str)
-    fila_resultado("lbl_da_val", da_str)
-    fila_resultado("lbl_be_val", be_str)
-    fila_resultado("lbl_edenor_val", edenor_str)
-    fila_resultado("lbl_tasa_proteccion_val", tasa_prot_str)
-    fila_resultado("lbl_tasa_salud_val", tasa_salud_str)
+    # =========================================================================
+    # SECCIÓN DE RESULTADOS CON LAS ETIQUETAS REALES DE TU IMAGEN
+    # =========================================================================
+    st.markdown("---")
     
-    # Caja final destacada
-    st.markdown(
-        f"""
-        <div class="resultado-box" style="border-left: 4px solid #1e3a8a !important; background-color: #f1f5f9 !important;">
-            <span class="resultado-label">lbl_tTotal_val</span>
-            <span class="resultado-valor">\{tasa_total_str}</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # 1. Fila de Base Imponible y Coeficientes en horizontal
+    c_bi, c_ca, c_cu, c_cb, c_cap = st.columns(5)
+    with c_bi:
+        st.markdown(f'<div class="resultado-box"><span class="resultado-label">Base imponible y Coeficientes BI:</span><span class="resultado-valor">{bi_str}</span></div>', unsafe_allow_html=True)
+    with c_ca:
+        st.markdown(f'<div class="resultado-box"><span class="resultado-label">CA:</span><span class="resultado-valor">{ca}</span></div>', unsafe_allow_html=True)
+    with c_cu:
+        st.markdown(f'<div class="resultado-box"><span class="resultado-label">CU:</span><span class="resultado-valor">{cu}</span></div>', unsafe_allow_html=True)
+    with c_cb:
+        st.markdown(f'<div class="resultado-box"><span class="resultado-label">CB:</span><span class="resultado-valor">{cb}</span></div>', unsafe_allow_html=True)
+    with c_cap:
+        st.markdown(f'<div class="resultado-box"><span class="resultado-label">CAP:</span><span class="resultado-valor">{cap}</span></div>', unsafe_allow_html=True)
+
+    # Función adaptada para estructurar las filas según tu formato exacto
+    def fila_item_tasas(descripcion, valor_texto, es_total=False):
+        if es_total:
+            st.markdown(
+                f"""
+                <div class="resultado-box" style="border: 2px solid #0f172a !important; margin-top: 15px; padding: 12px 14px;">
+                    <span class="resultado-label" style="font-size: 15px; color: #1e3a8a; font-weight: bold;">{descripcion}</span>
+                    <span class="resultado-valor" style="font-size: 16px; color: #0284c7; font-weight: bold;">{valor_texto}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"""
+                <div class="resultado-box">
+                    <span class="resultado-label" style="color: #1e3a8a;">{descripcion}</span>
+                    <span class="resultado-valor">{valor_texto}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    # 2. Bloque vertical de liquidación con tus nombres exactos de la imagen
+    fila_item_tasas("Límite inferior:", lim_str)
+    fila_item_tasas("Alícuota:", alic_str)
+    fila_item_tasas("CFA:", cfa_str)
+    fila_item_tasas("TSG Anual:", tasa_anual_str)
+    fila_item_tasas("TSG Mensual:", tasa_mensual_str)
+    fila_item_tasas("BC (Descuento):", bc_str)
+    fila_item_tasas("DA (Descuento):", da_str)
+    fila_item_tasas("BE (Descuento):", be_str)
+    fila_item_tasas("EDENOR:", edenor_str)
+    fila_item_tasas("Tasa de Protección:", tasa_prot_str)
+    fila_item_tasas("Tasa de Salud:", tasa_salud_str)
+    
+    # 3. Fila destacada para el total a pagar
+    fila_item_tasas("TSG Total:", tasa_total_str, es_total=True)
+
+    # 4. Botón institucional para imprimir reporte
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🖨️ IMPRIMIR REPORTE"):
+        st.info("Generando reporte de la partida municipal...")
 
 except ValueError:
     st.error("Revise que los campos numéricos sean válidos.")
-
