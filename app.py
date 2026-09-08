@@ -62,9 +62,8 @@ st.markdown(
 # Encabezado institucional
 st.markdown(
     """
-    <div style="background-color: #1e3a8a; padding: 14px; border-radius: 6px; color: white; display: flex; align-items: center;">
-        <span style="font-size: 20px; margin-right: 10px;">🏛️</span>
-        <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales</span>
+    <div style="background-color: #0284c7; padding: 14px; border-radius: 6px; color: white; display: flex; align-items: center;">
+        <span style="font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales</span>
     </div>
     """,
     unsafe_allow_html=True,
@@ -72,46 +71,24 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Partida municipal centrada
+# Partida municipal en el medio
 col_p1, col_p2, col_p3 = st.columns([1, 2, 1])
 with col_p2:
-    partida = st.text_input("PARTIDA MUNICIPAL N°:")
+    entry_partida = st.text_input("PARTIDA MUNICIPAL N°:")
 
 st.markdown("---")
-
-# 2. ESTE CSS FUERZA A LAS COLUMNAS A NO SUBDIVIDIRSE EN FILAS EN LA WEB
-st.markdown(
-    """
-    <style>
-        /* Obliga a los contenedores de columnas a mantenerse en fila horizontal */
-        [data-testid="stHorizontalBlock"] {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            gap: 1rem !important;
-        }
-        /* Ajusta el ancho de cada columna para que no se estiren de más */
-        [data-testid="stHorizontalBlock"] > div {
-            min-width: 0 !important;
-            flex: 1 1 0% !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # Controles de entrada organizados uno al lado del otro (en 3 columnas)
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    estado_sel = st.radio("Estado:", ["EDIFICADO", "BALDIO"])
-    uso_sel = st.radio("Uso:", ["RESIDENCIAL", "COMERCIAL", "INDUSTRIAL"])
+    var_estado = st.radio("Estado:", ["EDIFICADO", "BALDIO"])
+    var_uso = st.radio("Uso:", ["RESIDENCIAL", "COMERCIAL", "INDUSTRIAL"])
     var_acceso = st.radio("Acceso Principal:", ["NO", "SI"])
 
 with col2:
     var_zonif = st.selectbox("Zonificación:", ["A/B", "F", "OTRA"])
     var_tope = st.radio("Liberar Tope:", ["NO", "SI"])
-    
 
 with col3:
     st.markdown("**Descuentos:**")
@@ -134,7 +111,7 @@ col_val1, col_val2 = st.columns(2)
 with col_val1:
     entry_va = st.text_input("Valuación ($):", "300000,00")
 with col_val2:
-    anio_sel = st.selectbox(
+    var_anio = st.selectbox(
         "Valuación año:", ["2023 o anterior", "2024", "2025", "2026"]
     )
 
@@ -142,60 +119,35 @@ st.markdown("---")
 
 # Lógica de cálculo
 try:
-    va = (
-        float(entry_va.replace(".", "").replace(",", "."))
-        if entry_va
-        else 0.0
-    )
-    sup_terreno = (
-        float(entry_sup_terreno.replace(".", "").replace(",", "."))
-        if entry_sup_terreno
-        else 0.0
-    )
-    sup_edificada = (
-        float(entry_sup_edificada.replace(".", "").replace(",", "."))
-        if entry_sup_edificada
-        else 0.0
-    )
-    edenor_val = (
-        float(entry_edenor.replace(".", "").replace(",", "."))
-        if entry_edenor
-        else 0.0
-    )
+    va = float(entry_va.replace(".", "").replace(",", ".")) if entry_va else 0.0
+    sup_terreno = float(entry_sup_terreno.replace(".", "").replace(",", ".")) if entry_sup_terreno else 0.0
+    sup_edificada = float(entry_sup_edificada.replace(".", "").replace(",", ".")) if entry_sup_edificada else 0.0
+    
+    estado_sel = var_estado
+    uso_sel = var_uso
+    anio_sel = var_anio
 
-    if anio_sel == "2023 o anterior":
-        ca = 19.10
-    elif anio_sel == "2024":
-        ca = 2.76
-    elif anio_sel == "2025":
-        ca = 1.36
-    else:
-        ca = 1.00
+    if anio_sel == "2023 o anterior": ca = 19.10
+    elif anio_sel == "2024": ca = 2.76
+    elif anio_sel == "2025": ca = 1.36
+    else: ca = 1.00
 
-    if uso_sel == "RESIDENCIAL":
-        cu = 1.0
-    elif uso_sel == "COMERCIAL":
-        cu = 1.1
-    else:
-        cu = 1.25
+    if uso_sel == "RESIDENCIAL": cu = 1.0
+    elif uso_sel == "COMERCIAL": cu = 1.1
+    else: cu = 1.25
 
-    if estado_sel == "EDIFICADO":
-        cb = 1.0
-    else:
-        cb = 1.6 if sup_terreno <= 500 else 1.7 if sup_terreno <= 5000 else 2.0
+    if estado_sel == "EDIFICADO": cb = 1.0
+    else: cb = 1.6 if sup_terreno <= 500 else 1.7 if sup_terreno <= 5000 else 2.0
 
     if var_acceso == "SI":
-        if uso_sel == "RESIDENCIAL" and estado_sel == "EDIFICADO":
-            cap = 1.2
-        elif estado_sel == "BALDIO":
-            cap = 1.6
-        else:
-            cap = 1.5
+        if uso_sel == "RESIDENCIAL" and estado_sel == "EDIFICADO": cap = 1.2
+        elif estado_sel == "BALDIO": cap = 1.6
+        else: cap = 1.5
     else:
-        cap = 1.0
+        cap = 1.0  
 
     bi = round(va * ca * cu * cb * cap, 2)
-
+    
     if bi <= 5730000:
         lim_inf, cfa_val, alic = 0.0, 107883.00, 0.0
     elif bi <= 6446250:
@@ -224,40 +176,35 @@ try:
     excedente = max(0.0, bi - lim_inf)
     tasa_anual = round(((excedente * alic) + cfa_val), 2)
     tasa_mensual = round(tasa_anual / 12, 2)
-
-    tasa_proteccion = round(tasa_mensual * 0.095, 2)
-    tasa_salud = round(tasa_mensual * 0.105, 2)
-
+    
+    tasa_proteccion = round(tasa_mensual * 0.095, 2)  
+    tasa_salud = round(tasa_mensual * 0.105, 2)       
+    
     monto_bc = round(tasa_mensual * 0.10, 2) if var_bc == "SI" else 0.0
     monto_da = round(tasa_mensual * 0.10, 2) if var_da == "SI" else 0.0
     monto_be = round(tasa_mensual * 0.05, 2) if var_be == "SI" else 0.0
-
-    tasa_total = round(
-        (tasa_mensual + tasa_proteccion + tasa_salud)
-        - monto_bc
-        - monto_da
-        - monto_be
-        - edenor_val,
-        2,
-    )
-
+    monto_edenor = float(entry_edenor.replace(".", "").replace(",", ".")) if entry_edenor else 0.0
+    
+    tasa_total = round((tasa_mensual + tasa_proteccion + tasa_salud) - monto_bc - monto_da - monto_be - monto_edenor, 2)
+    
     if var_tope == "NO" and tasa_total < 4500.0:
         tasa_total = 8900.0 if estado_sel == "BALDIO" else 4500.0
+        
+    bi_str = f"${bi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    lim_str = f"${lim_inf:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    cfa_str = f"${cfa_val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    tasa_anual_str = f"${tasa_anual:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    alic_str = f"{alic * 100:.2f}%"
+    tasa_mensual_str = f"${tasa_mensual:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    bc_str = f"-${monto_bc:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    da_str = f"-${monto_da:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    be_str = f"-${monto_be:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    edenor_str = f"-${monto_edenor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    tasa_prot_str = f"${tasa_proteccion:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    tasa_salud_str = f"${tasa_salud:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    tasa_total_str = f"${tasa_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    def fmt(val):
-        return f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-    # Coeficientes tal cual los definiste
-    c_r1, c_r2, c_r3, c_r4, c_r5 = st.columns(5)
-    c_r1.metric("BI", fmt(bi))
-    c_r2.metric("CA", str(ca))
-    c_r3.metric("CU", str(cu))
-    c_r4.metric("CB", str(cb))
-    c_r5.metric("CAP", str(cap))
-
-    st.markdown("---")
-
-    # Función fila_resultado completada para renderizar tus recuadros de texto
+    # Renderizado en recuadros exactamente con los mismos nombres de tu archivo original
     def fila_resultado(etiqueta, valor):
         st.markdown(
             f"""
@@ -269,30 +216,34 @@ try:
             unsafe_allow_html=True
         )
 
-    # Llamadas a la función usando tus variables calculadas y tu formato original
-    fila_resultado("Tasa Mensual:", fmt(tasa_mensual))
-    fila_resultado("Tasa Protección Ciudadana:", fmt(tasa_proteccion))
-    fila_resultado("Tasa Salud Pública:", fmt(tasa_salud))
+    fila_resultado("BI", bi_str)
+    fila_resultado("CA", str(ca))
+    fila_resultado("CU", str(cu))
+    fila_resultado("CB", str(cb))
+    fila_resultado("CAP", str(cap))
+    fila_resultado("lbl_lim_val", lim_str)
+    fila_resultado("lbl_alic_val", alic_str)
+    fila_resultado("lbl_cfa_val", cfa_str)
+    fila_resultado("lbl_tsg_anual_val", tasa_anual_str)
+    fila_resultado("lbl_tasa_servicios_val", tasa_mensual_str)
+    fila_resultado("lbl_bc_val", bc_str)
+    fila_resultado("lbl_da_val", da_str)
+    fila_resultado("lbl_be_val", be_str)
+    fila_resultado("lbl_edenor_val", edenor_str)
+    fila_resultado("lbl_tasa_proteccion_val", tasa_prot_str)
+    fila_resultado("lbl_tasa_salud_val", tasa_salud_str)
     
-    if monto_bc > 0:
-        fila_resultado("Descuento BC:", f"- {fmt(monto_bc)}")
-    if monto_da > 0:
-        fila_resultado("Descuento DA:", f"- {fmt(monto_da)}")
-    if monto_be > 0:
-        fila_resultado("Descuento BE:", f"- {fmt(monto_be)}")
-    if edenor_val > 0:
-        fila_resultado("EDENOR:", f"- {fmt(edenor_val)}")
-        
-    # Recuadro final destacado para el total
+    # Caja final destacada
     st.markdown(
         f"""
         <div class="resultado-box" style="border-left: 4px solid #1e3a8a !important; background-color: #f1f5f9 !important;">
-            <span class="resultado-label" style="font-size: 14px; color: #1e3a8a;">TASA TOTAL A LIQUIDAR:</span>
-            <span class="resultado-valor" style="font-size: 14px; color: #1e3a8a;">\{fmt(tasa_total)}</span>
+            <span class="resultado-label">lbl_tTotal_val</span>
+            <span class="resultado-valor">\{tasa_total_str}</span>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-except Exception as e:
-    st.error(f"Error: {e}")
+except ValueError:
+    st.error("Revise que los campos numéricos sean válidos.")
+
