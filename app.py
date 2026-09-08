@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Liquidador Tasas por Servicios Generales - Municipio de Moreno",
+    page_title="LIQUIDADOR TASAS POR SERVICIOS GENERALES - MUNICIPIO DE MORENO",
     layout="wide",
 )
 
@@ -78,20 +78,16 @@ st.markdown(
                 color: #000000 !important;
                 font-size: 10pt !important;
             }
-            /* Ocultar barra lateral, botones superiores y de desarrollo de Streamlit */
             header, [data-testid="stSidebar"], [data-testid="stHeader"], .stDeployButton, [data-testid="stDecoration"] {
                 display: none !important;
             }
-            /* Ocultar el propio botón de impresión al mandar a imprimir */
             .stButton {
                 display: none !important;
             }
-            /* Quitar el scroll dinámico de la página web */
             [data-testid="stAppViewContainer"] {
                 overflow: visible !important;
                 position: static !important;
             }
-            /* Ajustar contenedores al ancho de la hoja A4 sin márgenes web */
             .block-container {
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
@@ -101,17 +97,19 @@ st.markdown(
                 border: 1px solid #000000 !important;
                 page-break-inside: avoid !important;
             }
-        </div>
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# Encabezado institucional
+# Encabezado institucional: EN MAYÚSCULAS, CENTRADO y azul celeste claro (#0ea5e9)
 st.markdown(
     """
-    <div style="background-color: #0284c7; padding: 12px; border-radius: 6px; color: white; display: flex; align-items: center;">
-        <span style="font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; color: white !important;">Liquidador Tasas por Servicios Generales - Municipio de Moreno</span>
+    <div style="background-color: #0ea5e9; padding: 14px; border-radius: 6px; color: white; text-align: center;">
+        <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: white !important; text-transform: uppercase;">
+            LIQUIDADOR TASAS POR SERVICIOS GENERALES - MUNICIPIO DE MORENO
+        </span>
     </div>
     """,
     unsafe_allow_html=True,
@@ -126,37 +124,41 @@ with col_p2:
 
 st.markdown("---")
 
-# Controles organizados estrictamente uno al lado del otro de izquierda a derecha (Fila 1)
-col_form1, col_form2, col_form3 = st.columns(3)
-with col_form1:
+# Fila 1 de Controles: Estado, Uso, Acceso Principal y Zonificación uno al lado del otro
+col_f1_1, col_f1_2, col_f1_3, col_f1_4 = st.columns(4)
+with col_f1_1:
     var_estado = st.radio("Estado:", ["EDIFICADO", "BALDIO"])
-with col_form2:
+with col_f1_2:
     var_uso = st.radio("Uso:", ["RESIDENCIAL", "COMERCIAL", "INDUSTRIAL"])
-with col_form3:
+with col_f1_3:
     var_acceso = st.radio("Acceso Principal:", ["NO", "SI"])
-
-# Fila 2 de controles horizontales
-col_form4, col_form5, col_form6 = st.columns(3)
-with col_form4:
+with col_f1_4:
     var_zonif = st.selectbox("Zonificación:", ["A/B", "F", "OTRA"])
-with col_form5:
-    var_tope = st.radio("Liberar Tope:", ["NO", "SI"])
-with col_form6:
-    entry_edenor = st.text_input("EDENOR ($):", "0,00")
-
-# Fila 3 de descuentos horizontales
-st.markdown("**Descuentos:**")
-col_desc1, col_desc2, col_desc3 = st.columns(3)
-with col_desc1:
-    var_bc = st.radio("BC 10%:", ["NO", "SI"], horizontal=True)
-with col_desc2:
-    var_da = st.radio("DA 10%:", ["NO", "SI"], horizontal=True)
-with col_desc3:
-    var_be = st.radio("BE 5%:", ["NO", "SI"], horizontal=True)
 
 st.markdown("---")
 
-# Superficies y Valuaciones en formato compacto horizontal
+# Fila de Descuentos: Buen Contribuyente, Débito Automático, Alta Electrónica y Edenor uno al lado del otro
+st.markdown("**Descuentos:**")
+col_desc1, col_desc2, col_desc3, col_desc4 = st.columns(4)
+with col_desc1:
+    var_bc = st.radio("Buen Contribuyente (BC 10%):", ["NO", "SI"], horizontal=True)
+with col_desc2:
+    var_da = st.radio("Débito Automático (DA 10%):", ["NO", "SI"], horizontal=True)
+with col_desc3:
+    var_be = st.radio("Alta Electrónica (BE 5%):", ["NO", "SI"], horizontal=True)
+with col_desc4:
+    entry_edenor = st.text_input("EDENOR ($):", "0,00")
+
+st.markdown("---")
+
+# Fila abajo de todo para Liberar Tope
+col_tope1, col_tope2, col_tope3 = st.columns(3)
+with col_tope1:
+    var_tope = st.radio("Liberar Tope:", ["NO", "SI"])
+
+st.markdown("---")
+
+# Superficies y Valuaciones
 col_sup1, col_sup2, col_val1, col_val2 = st.columns(4)
 with col_sup1:
     entry_sup_terreno = st.text_input("Superficie de Terreno (m²):", "300,00")
@@ -166,7 +168,6 @@ with col_val1:
     entry_va = st.text_input("Valuación ($):", "300000,00")
 with col_val2:
     var_anio = st.selectbox("Valuación año:", ["2023 o anterior", "2024", "2025", "2026"])
-
 # Lógica de cálculo y renderizado en formato horizontal compacto para hoja A4
 try:
     va = float(entry_va.replace(".", "").replace(",", ".")) if entry_va else 0.0
@@ -258,11 +259,12 @@ try:
     tasa_total_str = fmt(tasa_total)
 
     st.markdown("---")
+    st.markdown("**base imponible y coeficientes**")
     
     # 1. COEFICIENTES (Fila horizontal existente)
     c_bi, c_ca, c_cu, c_cb, c_cap = st.columns(5)
     with c_bi:
-        st.markdown(f'<div class="resultado-box"><span class="resultado-label">Base imponible y Coeficientes BI:</span><span class="resultado-valor">{bi_str}</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="resultado-box"><span class="resultado-label">BI:</span><span class="resultado-valor">{bi_str}</span></div>', unsafe_allow_html=True)
     with c_ca:
         st.markdown(f'<div class="resultado-box"><span class="resultado-label">CA:</span><span class="resultado-valor">{ca}</span></div>', unsafe_allow_html=True)
     with c_cu:
@@ -272,7 +274,7 @@ try:
     with c_cap:
         st.markdown(f'<div class="resultado-box"><span class="resultado-label">CAP:</span><span class="resultado-valor">{cap}</span></div>', unsafe_allow_html=True)
 
-    # Función auxiliar para renderizar cajas limpias dentro de las columnas horizontales
+    # Función auxiliar para renderizar las cajas dentro de las columnas
     def caja_horizontal(descripcion, valor_texto, columna_destino):
         with columna_destino:
             st.markdown(
@@ -285,29 +287,29 @@ try:
                 unsafe_allow_html=True
             )
 
-    # NUEVO: Distribución horizontal de importes en 3 columnas anchas (Izquierda a Derecha)
+    # NUEVO ORDENAMIENTO ESTRICTO DE FILAS (IZQUIERDA A DERECHA)
     c_res1, c_res2, c_res3 = st.columns(3)
     
-    # Fila 1 Horizontal: Límite inferior, Alícuota y CFA alineados uno al lado del otro
+    # Fila 1: Límite inferior, Alícuota, CFA
     caja_horizontal("Límite inferior:", lim_str, c_res1)
     caja_horizontal("Alícuota:", alic_str, c_res2)
     caja_horizontal("CFA:", cfa_str, c_res3)
     
-    # Fila 2 Horizontal: Tasas calculadas bases
+    # Fila 2: Tasa anual, Tasa mensual
     caja_horizontal("TSG Anual:", tasa_anual_str, c_res1)
     caja_horizontal("TSG Mensual:", tasa_mensual_str, c_res2)
-    caja_horizontal("Tasa de Protección:", tasa_prot_str, c_res3)
     
-    # Fila 3 Horizontal: Impuestos adicionales y deducciones básicas
+    # Fila 3: Tasa de salud, Tasa de protección, EDENOR
     caja_horizontal("Tasa de Salud:", tasa_salud_str, c_res1)
-    caja_horizontal("EDENOR:", edenor_str, c_res2)
-    caja_horizontal("BC (Descuento):", bc_str, c_res3)
+    caja_horizontal("Tasa de Protección:", tasa_prot_str, c_res2)
+    caja_horizontal("EDENOR:", edenor_str, c_res3)
     
-    # Fila 4 Horizontal: Descuentos restantes distribuidos uniformemente
-    caja_horizontal("DA (Descuento):", da_str, c_res1)
-    caja_horizontal("BE (Descuento):", be_str, c_res2)
+    # Fila 4: BC, DA, BE (Sin el texto "(Descuento)")
+    caja_horizontal("BC:", bc_str, c_res1)
+    caja_horizontal("DA:", da_str, c_res2)
+    caja_horizontal("BE:", be_str, c_res3)
 
-    # 3. Cuadro destacado final para el TSG Total posicionado abajo abarcando el ancho completo
+    # 3. Cuadro destacado final para el TSG Total abarcando el ancho completo
     st.markdown(
         f"""
         <div class="resultado-box" style="border: 2px solid #0f172a !important; margin-top: 10px; padding: 10px 14px;">
@@ -318,7 +320,7 @@ try:
         unsafe_allow_html=True
     )
 
-    # 4. Botón institucional para imprimir reporte (Abre el diálogo nativo de impresión del sistema)
+    # 4. Botón institucional para imprimir reporte en A4
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🖨️ IMPRIMIR REPORTE EN HOJA A4"):
         st.markdown("""<script>window.print();</script>""", unsafe_allow_html=True)
