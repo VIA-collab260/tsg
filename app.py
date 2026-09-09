@@ -115,18 +115,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Encabezado institucional
-st.markdown(
-    """
-    <div style="background-color: #0ea5e9; padding: 14px; border-radius: 6px; color: white; text-align: center;">
-        <span style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; color: white !important; text-transform: uppercase;">
-            LIQUIDADOR TASAS POR SERVICIOS GENERALES - MUNICIPIO DE MORENO
-        </span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
 st.markdown("<br>", unsafe_allow_html=True)
 
 # Partida municipal centrada
