@@ -5,21 +5,23 @@ st.set_page_config(
     layout="wide",
 )
 
-# Estilos CSS unificados: todas las fuentes tienen el mismo color institucional oscuro para máxima consistencia visual
+# Estilos CSS estrictos: unifica fuente (Arial), tamaño (13px) y color (#1e293b) en toda la aplicación
 st.markdown(
     """
     <style>
-        /* Forzar fuente Arial corporativa y fondo claro en toda la app */
-        .stApp, html, body, [data-testid="stAppViewContainer"] {
-            font-family: Arial, sans-serif !important;
-            background-color: #f8fafc !important;
-            color: #1e293b !important;
-        }
-        
-        /* Unificar absolutamente todos los textos, etiquetas y párrafos nativos al mismo color */
+        /* Unificación total de fuente, color y altura en toda la app */
+        .stApp, html, body, [data-testid="stAppViewContainer"],
         label, p, span, div, [data-testid="stWidgetLabel"] p, .stMarkdown p {
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
+            font-size: 13px !important;
+        }
+        
+        /* Ajuste fino para inputs y radios nativos de Streamlit */
+        div[data-testid="stMarkdownContainer"] p, .stRadio label {
+            font-family: Arial, sans-serif !important;
+            color: #1e293b !important;
+            font-size: 13px !important;
         }
         
         [data-testid="stWidgetLabel"] {
@@ -32,7 +34,7 @@ st.markdown(
             gap: 10px !important;
         }
         
-        /* Tarjetas de resultados compactas y 100% unificadas en color de fuente */
+        /* Tarjetas de resultados unificadas con el mismo tamaño y color de texto */
         .resultado-box {
             background-color: #ffffff !important;
             padding: 6px 10px;
@@ -47,16 +49,16 @@ st.markdown(
         
         .resultado-label {
             font-family: Arial, sans-serif !important;
-            color: #1e293b !important; /* Unificado con el color general */
-            font-weight: 600;
-            font-size: 12px;
+            color: #1e293b !important;
+            font-weight: bold;
+            font-size: 13px !important;
         }
         
         .resultado-valor {
             font-family: Arial, sans-serif !important;
-            color: #1e293b !important; /* Unificado con el color general */
+            color: #1e293b !important;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 13px !important;
         }
         
         /* Estilo para el botón de impresión */
@@ -68,6 +70,7 @@ st.markdown(
             border: none !important;
             padding: 8px 16px !important;
             width: 100% !important;
+            font-size: 13px !important;
         }
 
         /* REGLAS ESTRICTAS DE IMPRESIÓN PARA HOJA A4 */
@@ -102,7 +105,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Encabezado institucional: EN MAYÚSCULAS, CENTRADO y azul celeste claro
+# Encabezado institucional (Se mantiene de forma independiente como solicitaste)
 st.markdown(
     """
     <div style="background-color: #0ea5e9; padding: 14px; border-radius: 6px; color: white; text-align: center;">
@@ -116,7 +119,7 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Partida municipal (Texto unificado y en MAYÚSCULAS)
+# Partida municipal centrada
 col_p1, col_p2, col_p3 = st.columns(3)
 with col_p2:
     entry_partida = st.text_input("PARTIDA MUNICIPAL N°:")
@@ -137,7 +140,7 @@ with col_f1_4:
 st.markdown("---")
 
 # Fila de Descuentos
-st.markdown("**Descuentos:**")
+st.markdown("<p style='font-weight: bold; margin-bottom: 2px;'>DESCUENTOS:</p>", unsafe_allow_html=True)
 col_desc1, col_desc2, col_desc3, col_desc4 = st.columns(4)
 with col_desc1:
     var_bc = st.radio("Buen Contribuyente (BC 10%):", ["NO", "SI"], horizontal=True)
@@ -150,7 +153,7 @@ with col_desc4:
 
 st.markdown("---")
 
-# Fila para Liberar Tope
+# Fila abajo de todo para Liberar Tope
 col_tope1, col_tope2, col_tope3 = st.columns(3)
 with col_tope1:
     var_tope = st.radio("Liberar Tope:", ["NO", "SI"])
@@ -259,7 +262,7 @@ try:
 
     st.markdown("---")
     
-    # MODIFICADO: Título en MAYÚSCULAS y fuente unificada
+    # Título en MAYÚSCULAS y fuente unificada
     st.markdown("<p style='font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px;'>BASE IMPONIBLE Y COEFICIENTES</p>", unsafe_allow_html=True)
     
     # Coeficientes horizontales uniformes
@@ -288,7 +291,7 @@ try:
                 unsafe_allow_html=True
             )
 
-    # REORGANIZACIÓN ESTRICTA DE LAS CELDAS DE LIQUIDACIÓN
+    # REORGANIZACIÓN FINAL DE LAS FILAS DE LIQUIDACIÓN
     c_res1, c_res2, c_res3 = st.columns(3)
     
     # Fila 1: Límite inferior, Alícuota, CFA
@@ -296,32 +299,32 @@ try:
     caja_horizontal("Alícuota:", alic_str, c_res2)
     caja_horizontal("CFA:", cfa_str, c_res3)
     
-    # Fila 2: Tasa anual, Tasa mensual (Tercera celda vacía por reordenamiento)
+    # Fila 2: Tasa anual, Tasa mensual (Tercera celda libre/vacía)
     caja_horizontal("TSG Anual:", tasa_anual_str, c_res1)
     caja_horizontal("TSG Mensual:", tasa_mensual_str, c_res2)
     
-    # Fila 3: Tasa de salud, Tasa de protección, EDENOR (EDENOR baja a esta posición)
+    # Fila 3: Tasa de salud, Tasa de protección, EDENOR (EDENOR se ubica al lado de Tasa de protección)
     caja_horizontal("Tasa de Salud:", tasa_salud_str, c_res1)
     caja_horizontal("Tasa de Protección:", tasa_prot_str, c_res2)
     caja_horizontal("EDENOR:", edenor_str, c_res3)
     
-    # Fila 4: BC, DA, BE (BE baja y se ubica de forma horizontal junto a los otros descuentos)
+    # Fila 4: BC, DA, BE (BE baja y se ubica al lado de DA)
     caja_horizontal("BC:", bc_str, c_res1)
     caja_horizontal("DA:", da_str, c_res2)
     caja_horizontal("BE:", be_str, c_res3)
 
-    # 3. Cuadro destacado para el TSG Total (Letra unificada en color con el resto del reporte)
+    # 3. Cuadro para el TSG Total (Unificado en tipografía y color)
     st.markdown(
         f"""
         <div class="resultado-box" style="border: 2px solid #1e293b !important; margin-top: 10px; padding: 10px 14px;">
-            <span class="resultado-label" style="font-size: 14px; font-weight: bold;">TSG Total:</span>
-            <span class="resultado-valor" style="font-size: 15px; font-weight: bold;">{tasa_total_str}</span>
+            <span class="resultado-label" style="font-size: 13px; font-weight: bold;">TSG Total:</span>
+            <span class="resultado-valor" style="font-size: 13px; font-weight: bold;">{tasa_total_str}</span>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # 4. Botón institucional para imprimir reporte en A4
+    # 4. Botón para imprimir reporte en A4
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🖨️ IMPRIMIR REPORTE EN HOJA A4"):
         st.markdown("""<script>window.print();</script>""", unsafe_allow_html=True)
