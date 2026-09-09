@@ -105,7 +105,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Encabezado institucional (Se mantiene de forma independiente como solicitaste)
+# Encabezado institucional
 st.markdown(
     """
     <div style="background-color: #0ea5e9; padding: 14px; border-radius: 6px; color: white; text-align: center;">
@@ -291,29 +291,32 @@ try:
                 unsafe_allow_html=True
             )
 
-    # REORGANIZACIÓN FINAL DE LAS FILAS DE LIQUIDACIÓN
-    c_res1, c_res2, c_res3 = st.columns(3)
+    # CORRECCIÓN DE REORGANIZACIÓN ESTRICTA POR FILAS COMPLETAS DE IZQUIERDA A DERECHA
     
-    # Fila 1: Límite inferior, Alícuota, CFA
-    caja_horizontal("Límite inferior:", lim_str, c_res1)
-    caja_horizontal("Alícuota:", alic_str, c_res2)
-    caja_horizontal("CFA:", cfa_str, c_res3)
+    # Fila 1: Límite inferior | Alícuota | CFA
+    f1_c1, f1_c2, f1_c3 = st.columns(3)
+    caja_horizontal("Límite inferior:", lim_str, f1_c1)
+    caja_horizontal("Alícuota:", alic_str, f1_c2)
+    caja_horizontal("CFA:", cfa_str, f1_c3)
     
-    # Fila 2: Tasa anual, Tasa mensual (Tercera celda libre/vacía)
-    caja_horizontal("TSG Anual:", tasa_anual_str, c_res1)
-    caja_horizontal("TSG Mensual:", tasa_mensual_str, c_res2)
+    # Fila 2: TSG Anual | TSG Mensual | (Tercera columna vacía)
+    f2_c1, f2_c2, f2_c3 = st.columns(3)
+    caja_horizontal("TSG Anual:", tasa_anual_str, f2_c1)
+    caja_horizontal("TSG Mensual:", tasa_mensual_str, f2_c2)
     
-    # Fila 3: Tasa de salud, Tasa de protección, EDENOR (EDENOR se ubica al lado de Tasa de protección)
-    caja_horizontal("Tasa de Salud:", tasa_salud_str, c_res1)
-    caja_horizontal("Tasa de Protección:", tasa_prot_str, c_res2)
-    caja_horizontal("EDENOR:", edenor_str, c_res3)
+    # Fila 3: Tasa de Salud | Tasa de Protección | EDENOR (Alineado al lado de Tasa de Protección)
+    f3_c1, f3_c2, f3_c3 = st.columns(3)
+    caja_horizontal("Tasa de Salud:", tasa_salud_str, f3_c1)
+    caja_horizontal("Tasa de Protección:", tasa_prot_str, f3_c2)
+    caja_horizontal("EDENOR:", edenor_str, f3_c3)
     
-    # Fila 4: BC, DA, BE (BE baja y se ubica al lado de DA)
-    caja_horizontal("BC:", bc_str, c_res1)
-    caja_horizontal("DA:", da_str, c_res2)
-    caja_horizontal("BE:", be_str, c_res3)
+    # Fila 4: BC | DA | BE (BE bajó de posición y quedó alineado a la derecha de DA)
+    f4_c1, f4_c2, f4_c3 = st.columns(3)
+    caja_horizontal("BC:", bc_str, f4_c1)
+    caja_horizontal("DA:", da_str, f4_c2)
+    caja_horizontal("BE:", be_str, f4_c3)
 
-    # 3. Cuadro para el TSG Total (Unificado en tipografía y color)
+    # 3. Cuadro para el TSG Total (Unificado en tipografía y color con el resto)
     st.markdown(
         f"""
         <div class="resultado-box" style="border: 2px solid #1e293b !important; margin-top: 10px; padding: 10px 14px;">
