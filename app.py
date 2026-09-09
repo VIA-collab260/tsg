@@ -1,9 +1,16 @@
 import streamlit as st
 
-st.set_page_config(
-    page_title="LIQUIDADOR TASAS POR SERVICIOS GENERALES - MUNICIPIO DE MORENO",
-    layout="wide",
-)
+import os
+import streamlit as st
+
+# Detectar de forma segura la carpeta donde está corriendo tu app
+ruta_base = os.path.dirname(__file__)
+
+# --- IMAGEN DE ENCABEZADO ---
+# Se coloca justo al principio, arriba del título azul
+ruta_encabezado = os.path.join(ruta_base, "banner1.png")
+if os.path.exists(ruta_encabezado):
+    st.image(ruta_encabezado, use_column_width=True)
 
 # Estilos CSS estrictos: unifica fuente (Arial), tamaño (13px) y color (#1e293b) en toda la aplicación
 st.markdown(
@@ -335,3 +342,6 @@ try:
 
 except ValueError:
     st.error("Revise que los campos numéricos sean válidos.")
+ruta_pie = os.path.join(ruta_base, "banner2.png")
+if os.path.exists(ruta_pie):
+    st.image(ruta_pie, use_column_width=True)
