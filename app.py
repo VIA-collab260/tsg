@@ -147,7 +147,7 @@ with col_desc1:
 with col_desc2:
     var_da = st.radio("Débito Automático (DA 10%):", ["NO", "SI"], horizontal=True)
 with col_desc3:
-    var_be = st.radio("Alta Electrónica (BE 5%):", ["NO", "SI"], horizontal=True)
+    var_be = st.radio("Boleta Electrónica (BE 5%):", ["NO", "SI"], horizontal=True)
 with col_desc4:
     entry_edenor = st.text_input("EDENOR ($):", "0,00")
 
